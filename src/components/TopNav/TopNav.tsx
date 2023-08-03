@@ -23,9 +23,11 @@ function MenuItemList(props: MenuItemListProps) {
                         let link: string = '/' + menuItem.replaceAll(' ', '').toLowerCase();
 
                         return (
-                            <div key={itemIndex} className={linkDivClasses}>
-                                <Link href={link}>{menuItem}</Link>
-                            </div>
+                            <Link href={link} key={itemIndex}>
+                                <div className={linkDivClasses}>
+                                    <p>{menuItem}</p>
+                                </div>
+                            </Link>
                         );
                     }
                 )
@@ -35,7 +37,7 @@ function MenuItemList(props: MenuItemListProps) {
 }
 
 function DesktopMenuItemList(props: MenuItemListProps) {
-    const linkDivClasses: string = "px-5 py-2 opacity-100 rounded-lg text-white ml-5 " +
+    const linkDivClasses: string = "duration-100 px-5 py-2 opacity-100 rounded-lg text-white ml-5 " +
         "hover:bg-white/20";
 
     return (
@@ -46,9 +48,11 @@ function DesktopMenuItemList(props: MenuItemListProps) {
                         let link: string = '/' + menuItem.replaceAll(' ', '').toLowerCase();
 
                         return (
-                            <div key={itemIndex} className={linkDivClasses}>
-                                <Link href={link}>{menuItem}</Link>
-                            </div>
+                            <Link href={link} key={itemIndex}>
+                                <div className={linkDivClasses}>
+                                    <p>{menuItem}</p>
+                                </div>
+                            </Link>
                         );
                     }
                 )

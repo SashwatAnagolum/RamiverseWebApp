@@ -1,10 +1,12 @@
-import WorldPreviewCard from '@/components/WorldPreviewCard/WorldPreviewCard';
+import WorldList from '@/components/WorldList/WorldList';
 
 export default function Home() {
     return (
-        <div className="flex flex-col gap-y-2 m-2">
-            <WorldPreviewCard></WorldPreviewCard>
-            <WorldPreviewCard></WorldPreviewCard>
+        <div>
+            <div className="m-5 flex flex-row justify-around">
+                <h1 className="page-title">Public Worlds</h1>
+            </div>
+            <WorldList></WorldList>
         </div>
     );
 };
