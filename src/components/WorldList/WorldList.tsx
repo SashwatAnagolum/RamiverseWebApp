@@ -3,7 +3,7 @@ import WorldPreviewCard from '@/components/WorldPreviewCard/WorldPreviewCard';
 export default function WorldList() {
     const worldIDs: string[] = new Array(12);
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 14; i++) {
         worldIDs[i] = "ff";
     }
 
