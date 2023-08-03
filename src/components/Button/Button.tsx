@@ -4,8 +4,6 @@ type ButtonProps = {
     theme: string
 }
 
-
-
 export default function Button(props: ButtonProps) {
     let buttonStyles: string;
     buttonStyles = "px-5 py-2 rounded-md";
