@@ -9,6 +9,7 @@ import minecraftPic from './../../assets/minecraft_world.png';
 import minecraftPic2 from './../../assets/minecraft_world_2.jpg';
 import minecraftPic3 from './../../assets/minecraft_world_3.jpg';
 import minecraftPic4 from './../../assets/minecraft_world_4.jpg';
+import WorldDetailsModal from '../WorldDetailsModal/WorldDetailsModal';
 
 type WorldPreviewCardProps = {
     imageID: number;
@@ -16,6 +17,7 @@ type WorldPreviewCardProps = {
 
 export default function WorldPreviewCard(props: WorldPreviewCardProps) {
     const [isHoveredOn, setIsHoveredOn] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
 
     let imageDivClasses: string, darkModalClasses: string, darkModalTextClasses: string;
 
@@ -57,15 +59,8 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                         className="relative min-w-full rounded-t-lg overflow-clip -z-10"
                     />
                 </div>
-                <div
-                    className="contents"
-                    onClick={
-                        (e) => {
-
-                        }
-                    }
-                >
-                    <div className={darkModalClasses}>
+                <div className="contents">
+                    <div className={darkModalClasses} onClick={(e) => { setModalOpen(true); }}>
                         <p className={darkModalTextClasses}>More Details</p>
                     </div>
                 </div>
@@ -79,6 +74,17 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                     <p className="px-3 py-1 bg-darkgrey text-white rounded-2xl">Tag 3</p>
                 </div>
             </div>
+            <WorldDetailsModal
+                isOpen={modalOpen}
+                worldShortDesc=""
+                worldID=""
+                stateChanger={
+                    () => {
+                        setModalOpen(false);
+                        setIsHoveredOn(false);
+                    }
+                }
+            ></WorldDetailsModal>
         </div>
     );
 }

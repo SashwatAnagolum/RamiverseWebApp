@@ -11,7 +11,11 @@ type MenuItemListProps = {
     menuItems: string[];
 };
 
-function MenuItemList(props: MenuItemListProps) {
+type MobileMenuItemListProps = {
+    menuItems: string[];
+};
+
+function MenuItemList(props: MobileMenuItemListProps) {
     const linkDivClasses: string = "py-2 opacity-100 rounded-lg p-5 text-white " +
         "hover:bg-white/20 sm:mr-5";
 
@@ -23,7 +27,9 @@ function MenuItemList(props: MenuItemListProps) {
                         let link: string = '/' + menuItem.replaceAll(' ', '').toLowerCase();
 
                         return (
-                            <Link href={link} key={itemIndex}>
+                            <Link
+                                href={link} key={itemIndex}
+                            >
                                 <div className={linkDivClasses}>
                                     <p>{menuItem}</p>
                                 </div>
@@ -94,7 +100,9 @@ export default function TopNav(props: TopNavProps) {
                     <p className="text-white font-bold">Ramiverse</p>
                 </div>
                 <DesktopMenuItemList menuItems={props.menuItems}></DesktopMenuItemList>
-                <div onClick={e => { setIsOpen(!isOpen); }} className="lg:hidden">
+                <div
+                    onClick={e => { setIsOpen(!isOpen); }} className="lg:hidden"
+                >
                     <div className={burgerClasses[0]}></div>
                     <div className={burgerClasses[1]}></div>
                     <div className={burgerClasses[2]}></div>
