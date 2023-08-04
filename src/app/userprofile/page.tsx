@@ -4,7 +4,7 @@ import UserProfileHero from '@/components/UserProfileHero/UserProfileHero';
 
 export default function Home() {
     return (
-        <div className="flex flex-col justify-items-center gap-y-5  ">
+        <div className="flex flex-col justify-items-center gap-y-5 ">
             <UserAvatar />
             <UserProfileHero />
             {/* <div className='flex flex-row m-5'>
