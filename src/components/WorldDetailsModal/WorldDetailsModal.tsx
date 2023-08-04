@@ -1,7 +1,8 @@
 import { WorldInfoInterface } from "../WorldPreviewCard/WorldPreviewCard";
 import ImageCarousel from "../ImageCarousel/ImageCarousel";
 import Button from "../Button/Button";
-import { BUILD_ID_FILE } from "next/dist/shared/lib/constants";
+
+import { useEffect } from 'react';
 
 
 type WorldDetailsProps = {
@@ -11,13 +12,21 @@ type WorldDetailsProps = {
 }
 
 export default function WorldDetailsModal(props: WorldDetailsProps) {
+    useEffect(
+        () => {
+            if (props.isOpen) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+    );
+
     let modalElement: JSX.Element;
 
     if (props.isOpen) {
-        document.body.style.overflow = 'hidden';
-
         modalElement = (
-            <div className="duration-100 fixed top-0 left-0 h-screen w-screen bg-white z-50">
+            <div className="duration-100 fixed top-0 left-0 h-screen w-screen bg-white z-50 overflow-y-scroll hide-scrollbar lg:px-24">
                 <div className="absolute top-0 left-0 w-full flex flex-col p-5 gap-y-5">
                     <div
                         className="rounded-full h-9 w-9 bg-midnightblue self-end cursor-pointer"
@@ -27,7 +36,7 @@ export default function WorldDetailsModal(props: WorldDetailsProps) {
                         <div className="h-1 w-5 -rotate-45 bg-white translate-y-3 translate-x-2"></div>
                     </div>
                 </div>
-                <div className="flex flex-col w-full mt-5 gap-y-5">
+                <div className="flex flex-col w-full mt-5 gap-y-5 max-w-screen-xl mx-auto">
                     <div className="mx-5">
                         <h2 className="page-title">{props.worldInfo.worldName}</h2>
                         <p>{props.worldInfo.worldUploader}</p>
@@ -38,18 +47,26 @@ export default function WorldDetailsModal(props: WorldDetailsProps) {
                     <div className="mx-5">
                         <p className="font-bold">World Screenshots</p>
                     </div>
-                    <div className="w-full h-100">
+                    <div className="w-full h-48 sm:h-72 md:h-96 lg:px-5">
                         <ImageCarousel imageURLs={props.worldInfo.worldImages}></ImageCarousel>
                     </div>
                     <div className="mx-5">
                         <p className="font-bold">Description</p>
                         <p>{props.worldInfo.worldShortDesc}</p>
                     </div>
+                    <div className="flex flex-row flex-wrap mx-5 mb-5 text-xs gap-1">
+                        {
+                            props.worldInfo.worldTags.map(
+                                tag => (
+                                    <p className="px-3 py-1 bg-darkgrey text-white rounded-2xl">{tag}</p>
+                                )
+                            )
+                        }
+                    </div>
                 </div >
-            </div >
+            </div>
         )
     } else {
-        document.body.style.overflow = 'auto';
         modalElement = <></>;
     }
 

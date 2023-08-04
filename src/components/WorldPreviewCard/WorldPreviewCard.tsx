@@ -18,6 +18,7 @@ export interface WorldInfoInterface {
     worldURL: string;
     worldImages: string[];
     worldShortDesc: string;
+    worldTags: string[];
 }
 
 export default function WorldPreviewCard(props: WorldPreviewCardProps) {
@@ -43,14 +44,15 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
         worldShortDesc: 'A sample world made in Minecraft ' +
             'that somehows works on the Unity WebGL player. ' +
             'Explore the infinite world, build fortresses, defend ' +
-            'yourself from monsters, and much more!'
+            'yourself from monsters, and much more!',
+        worldTags: ['Minecraft', 'Sandbox', 'Another tag', 'Tag 4']
     };
 
 
     let imageDivClasses: string, darkModalClasses: string, darkModalTextClasses: string;
 
     darkModalClasses = 'absolute top-0 bottom-0 left-0 right-0 w-full' +
-        ' h-full z-0 flex-col justify-around items-center';
+        ' h-full z-0 flex-col justify-around items-center cursor-pointer';
 
     darkModalTextClasses = 'duration-100 text-white text-lg font-semibold h-min';
 
@@ -96,12 +98,16 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                 </div>
             </div>
             <div className="p-2">
-                <p className="text-md font-semibold">Minecraft World</p>
-                <p>Sashwat Anagolum</p>
-                <div className="flex flex-row flex-wrap py-2 text-xs gap-2">
-                    <p className="px-3 py-1 bg-darkgrey text-white rounded-2xl">Minecraft</p>
-                    <p className="px-3 py-1 bg-darkgrey text-white rounded-2xl">Sandbox</p>
-                    <p className="px-3 py-1 bg-darkgrey text-white rounded-2xl">Tag 3</p>
+                <p className="text-md font-semibold">{sampleWorldInfo.worldName}</p>
+                <p>{sampleWorldInfo.worldUploader}</p>
+                <div className="flex flex-row flex-wrap py-2 text-xs gap-1">
+                    {
+                        sampleWorldInfo.worldTags.map(
+                            tag => (
+                                <p className="px-3 py-1 bg-darkgrey text-white rounded-2xl">{tag}</p>
+                            )
+                        )
+                    }
                 </div>
             </div>
             <WorldDetailsModal
