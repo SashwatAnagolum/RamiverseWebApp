@@ -1,5 +1,6 @@
 import { WorldInfoInterface } from "../WorldPreviewCard/WorldPreviewCard";
 import ImageCarousel from "../ImageCarousel/ImageCarousel";
+import CloseButton from "../CloseButton/CloseButton";
 import Button from "../Button/Button";
 
 import { useEffect } from 'react';
@@ -27,14 +28,8 @@ export default function WorldDetailsModal(props: WorldDetailsProps) {
     if (props.isOpen) {
         modalElement = (
             <div className="duration-100 fixed top-0 left-0 h-screen w-screen bg-white z-50 overflow-y-scroll hide-scrollbar lg:px-24">
-                <div className="absolute top-0 left-0 w-full flex flex-col p-5 gap-y-5">
-                    <div
-                        className="rounded-full h-9 w-9 bg-midnightblue self-end cursor-pointer"
-                        onClick={() => props.stateChanger()}
-                    >
-                        <div className="h-1 w-5 rotate-45 bg-white translate-y-4 translate-x-2"></div>
-                        <div className="h-1 w-5 -rotate-45 bg-white translate-y-3 translate-x-2"></div>
-                    </div>
+                <div className="absolute top-0 left-0 w-full flex flex-col items-end p-5 gap-y-5">
+                    <CloseButton stateChanger={props.stateChanger}></CloseButton>
                 </div>
                 <div className="flex flex-col w-full mt-5 gap-y-5 max-w-screen-xl mx-auto">
                     <div className="mx-5">
@@ -42,7 +37,12 @@ export default function WorldDetailsModal(props: WorldDetailsProps) {
                         <p>{props.worldInfo.worldUploader}</p>
                     </div>
                     <div className="mx-5">
-                        <Button text="Explore World" type="redirect" theme="blue"></Button>
+                        <Button
+                            text="Explore World"
+                            type="redirect"
+                            theme="blue"
+                            clickHandler={() => { }}
+                        ></Button>
                     </div>
                     <div className="mx-5">
                         <p className="font-bold">World Screenshots</p>

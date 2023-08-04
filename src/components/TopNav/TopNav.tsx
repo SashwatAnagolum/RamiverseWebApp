@@ -96,9 +96,10 @@ export default function TopNav(props: TopNavProps) {
     return (
         <div className="w-full sticky top-0 z-50">
             <div className="w-full bg-midnightblue flex flex-row pl-10 pr-5 py-5 justify-between">
-                <div className="flex flex-col justify-center">
+                <Link href="/" className="flex flex-col justify-center">
                     <p className="text-white font-bold">Ramiverse</p>
-                </div>
+                </Link>
+
                 <DesktopMenuItemList menuItems={props.menuItems}></DesktopMenuItemList>
                 <div
                     onClick={e => { setIsOpen(!isOpen); }} className="lg:hidden"

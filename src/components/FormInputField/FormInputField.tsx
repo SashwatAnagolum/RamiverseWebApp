@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react';
-
 type FormInputFieldProps = {
     fieldName: string;
     type: string;
-    validator: string;
+    isValid: boolean;
+    setter: (newString: string) => void;
+    value: string;
 };
 
 function usernameValidation(username: string): boolean {
@@ -21,22 +21,16 @@ function passwordValidation(password: string): boolean {
 }
 
 export default function FormInputField(props: FormInputFieldProps) {
-    const [inputValue, setInputValue] = useState("");
-
     const validatorChoices = new Map();
     validatorChoices.set('username', usernameValidation);
     validatorChoices.set('password', passwordValidation);
 
     let inputClassName: string = 'w-full p-2 rounded-lg border-2 border-lightgrey focus:outline-none';
 
-    if (validatorChoices.has(props.validator)) {
-        if (validatorChoices.get(props.validator)(inputValue)) {
-            inputClassName += ' focus:border-darkgrey';
-        } else {
-            inputClassName += ' focus:border-darkred focus:bg-lightred';
-        }
-    } else {
+    if (props.isValid) {
         inputClassName += ' focus:border-darkgrey';
+    } else {
+        inputClassName += ' focus:border-darkred focus:bg-lightred';
     }
 
     return (
@@ -45,10 +39,10 @@ export default function FormInputField(props: FormInputFieldProps) {
             <input
                 className={inputClassName}
                 type={props.type}
-                placeholder={props.fieldName} value={inputValue}
+                placeholder={props.fieldName} value={props.value}
                 onChange={
                     (e) => {
-                        setInputValue(e.target.value);
+                        props.setter(e.target.value);
                     }
                 }
             />

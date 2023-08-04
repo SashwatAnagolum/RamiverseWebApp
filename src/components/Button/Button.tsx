@@ -1,12 +1,15 @@
+'use client'
+
 type ButtonProps = {
-    text: string
-    type: string
-    theme: string
+    text: string;
+    type: string;
+    theme: string;
+    clickHandler: () => void;
 }
 
 export default function Button(props: ButtonProps) {
     let buttonStyles: string;
-    buttonStyles = "px-5 py-2 rounded-md";
+    buttonStyles = "px-5 py-2 rounded-md w-full sm:w-auto";
 
     if (props.theme === "blue") {
         buttonStyles += " text-white bg-midnightblue hover:bg-darkblue";
@@ -16,7 +19,7 @@ export default function Button(props: ButtonProps) {
 
     return (
         <div>
-            <button className={buttonStyles}>
+            <button className={buttonStyles} onClick={() => props.clickHandler()}>
                 {props.text}
             </button>
         </div>

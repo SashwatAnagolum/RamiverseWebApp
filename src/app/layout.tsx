@@ -23,14 +23,15 @@ export default function RootLayout({
 	menuItemNames.push("Log In");
 	menuItemNames.push('Register');
 
-	const bodyClassName: string = inter.className + " min-h-screen"
-
+	const bodyClassName: string = inter.className + " min-h-screen flex flex-col"
 
 	return (
 		<html lang="en">
 			<body className={bodyClassName}>
 				<TopNav menuItems={menuItemNames}></TopNav>
-				{children}
+				<div className="w-full flex-1">
+					{children}
+				</div>
 				<Footer></Footer>
 			</body>
 		</html>

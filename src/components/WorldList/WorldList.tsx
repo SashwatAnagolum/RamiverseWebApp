@@ -18,7 +18,7 @@ export default function WorldList() {
     )
 
     return (
-        <div className="m-5 columns-1 sm:columns-2 lg:columns-3 xl:columns-4">
+        <div className="m-5 columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-6">
             {worldCards}
         </div>
     );
