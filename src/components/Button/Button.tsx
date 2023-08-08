@@ -4,12 +4,19 @@ type ButtonProps = {
     text: string;
     type: string;
     theme: string;
-    clickHandler: () => void;
+    clickHandler: (() => void) | null;
 }
 
 export default function Button(props: ButtonProps) {
     let buttonStyles: string;
     buttonStyles = "px-5 py-2 rounded-md w-full sm:w-auto";
+    let clickHandler: () => void;
+
+    if (!props.clickHandler) {
+        clickHandler = () => { };
+    } else {
+        clickHandler = props.clickHandler;
+    }
 
     if (props.theme === "blue") {
         buttonStyles += " text-white bg-midnightblue hover:bg-darkblue";
@@ -19,7 +26,7 @@ export default function Button(props: ButtonProps) {
 
     return (
         <div className="w-full flex flex-col items-stretch">
-            <button className={buttonStyles} onClick={() => props.clickHandler()}>
+            <button className={buttonStyles} onClick={clickHandler}>
                 {props.text}
             </button>
         </div>
