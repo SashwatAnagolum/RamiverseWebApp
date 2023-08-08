@@ -67,7 +67,7 @@ export default function WorldList(props: WorldListProps) {
                     setIsLoading(false);
                 }
             );
-        }, []
+        }, [pageNumber]
     );
 
     const worldIDs: string[] = new Array(12);

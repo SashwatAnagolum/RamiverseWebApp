@@ -49,7 +49,7 @@ export default function ImageCarousel(props: ImageCarouselProps) {
                     {
                         props.imageURLs.map(
                             (imageURL, index) => (
-                                <div className="h-full w-full">
+                                <div className="h-full w-full" key={index}>
                                     <Image
                                         key={index}
                                         src={imageURL}

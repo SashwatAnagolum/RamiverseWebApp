@@ -57,8 +57,11 @@ export default function WorldDetailsModal(props: WorldDetailsProps) {
                     <div className="flex flex-row flex-wrap mx-5 mb-5 text-xs gap-1">
                         {
                             props.worldInfo.worldTags.map(
-                                tag => (
-                                    <p className="px-3 py-1 bg-darkgrey text-white rounded-2xl">{tag}</p>
+                                (tag, index) => (
+                                    <p
+                                        className="px-3 py-1 bg-darkgrey text-white rounded-2xl"
+                                        key={index}
+                                    >{tag}</p>
                                 )
                             )
                         }
