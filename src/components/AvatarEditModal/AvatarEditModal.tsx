@@ -1,5 +1,6 @@
 'use client'
 
+import fetchWithTimeout from "@/app/api/utils";
 import Button from "../Button/Button";
 import CloseButton from "../CloseButton/CloseButton";
 
@@ -13,6 +14,42 @@ type AvatarEditModalProps = {
 function handleAvatarChangeRequest(inputRef: RefObject<HTMLInputElement>) {
     if (inputRef.current) {
         inputRef.current.click();
+    }
+}
+
+async function uploadImage(inputRef: RefObject<HTMLInputElement>,
+    setValidUpload: (num: number) => void) {
+    if (inputRef.current && inputRef.current.files) {
+        const data = await fetchWithTimeout(
+            './api/presigned',
+            {
+                headers: {
+                    'request-type': 'put',
+                    'filename': 'user-avatar'
+                }
+            }
+        );
+
+        const signedURL = await data.body?.getReader().read().then(
+            (resp) => new TextDecoder().decode(resp.value)
+        );
+
+        if (signedURL) {
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('PUT', signedURL);
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4 && xhr.status == 200) {
+                    setValidUpload(2);
+                }
+            }
+
+            xhr.send(inputRef.current.files[0]);
+        } else {
+            setValidUpload(3);
+        }
+    } else {
+        setValidUpload(3);
     }
 }
 
@@ -36,8 +73,8 @@ function handleFileSelection(inputRef: RefObject<HTMLInputElement>,
 }
 
 function handleImageLoad(imageRef: RefObject<HTMLImageElement>,
-    setValidUpload: (valid: number) => void,
-    getURLString: () => string) {
+    setValidUpload: (valid: number) => void, getURLString: () => string,
+    inputRef: RefObject<HTMLInputElement>) {
     if (imageRef.current) {
         if (
             (imageRef.current.naturalWidth < 300) ||
@@ -46,7 +83,7 @@ function handleImageLoad(imageRef: RefObject<HTMLImageElement>,
             window.URL.revokeObjectURL(getURLString());
             setValidUpload(1);
         } else {
-            setValidUpload(2);
+            uploadImage(inputRef, setValidUpload);
         }
     }
 }
@@ -87,6 +124,10 @@ export default function AvatarEditModal(props: AvatarEditModalProps) {
         imageClassName = 'hidden';
         statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
         statusDivText = 'Please ensure that the chosen file is an image and is big enough!.';
+    } else if (validUpload == 3) {
+        imageClassName = 'hidden';
+        statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
+        statusDivText = 'Encountered an error during image upload! Please try again later.';
     } else {
         imageClassName = 'hidden';
         statusDivClassNames += ' opacity-0';
@@ -138,7 +179,7 @@ export default function AvatarEditModal(props: AvatarEditModalProps) {
                             ref={imageRef}
                             className={imageClassName}
                             fetchPriority="high"
-                            onLoad={() => handleImageLoad(imageRef, setValidUpload, getURL)}></img>
+                            onLoad={() => handleImageLoad(imageRef, setValidUpload, getURL, fileInputRef)}></img>
                     </div>
                 </div>
             </div>

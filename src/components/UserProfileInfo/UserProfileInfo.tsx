@@ -18,6 +18,7 @@ export default function UserProfileInfo() {
                 }
                 userName="Sammy Anagolum"
                 userJoinDate="April 21 2003"
+                userID=""
             ></UserAvatar>
             <AvatarEditModal
                 isOpen={avatarEditModalOpen}

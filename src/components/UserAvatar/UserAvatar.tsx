@@ -9,11 +9,18 @@ type UserAvatarProps = {
     onClick: () => void;
     userName: string;
     userJoinDate: string;
+    userID: string;
 }
 
 export default function UserAvatar(props: UserAvatarProps) {
     const [isHoveredOn, setIsHoveredOn] = useState(false);
-    let imageDivClasses: string, darkModalClasses: string;
+    let imageDivClasses: string, darkModalClasses: string, userAvatarURL: string;
+
+    if (props.userID == '') {
+        userAvatarURL = 'https://cdn.ramiverse.xyz/user-avatar';
+    } else {
+        userAvatarURL = 'https://cdn.ramiverse.xyz/' + props.userID + '/user-avatar';
+    }
 
     darkModalClasses = 'absolute top-0 bottom-0 left-0 right-0 m-auto' +
         ' w-full h-full z-0 flex flex-col justify-around cursor-pointer' +
@@ -31,9 +38,11 @@ export default function UserAvatar(props: UserAvatarProps) {
         <div className="flex flex-col items-center relative gap-y-5">
             <div className={imageDivClasses}>
                 <Image
-                    src={jack}
+                    src={userAvatarURL}
+                    width={1000}
+                    height={1000}
                     alt="Jack Avatar"
-                    className="rounded-full"
+                    className="rounded-full h-64 w-64 object-cover"
                 />
                 <div
                     className={darkModalClasses}

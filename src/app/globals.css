@@ -16,3 +16,17 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+.skeleton {
+    animation: loading 1s infinite linear alternate;
+}
+
+@keyframes loading {
+    0% {
+        background-color: #bebec2;
+    }
+
+    100% {
+        background-color: #a0a0a0;
+    }
+}
