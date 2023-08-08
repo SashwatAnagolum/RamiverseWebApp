@@ -6,14 +6,43 @@ import FormInputField from "@/components/FormInputField/FormInputField";
 import { useState } from "react";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import fetchWithTimeout from "../api/utils";
 
-// TODO: talk to server here. For now, just returning a random value.
-// 1 measn bad login
-// if it is a good login (2), set the global state to logged in.
-function loginSubmitHandler(username: string, password: string,
-    setLoginValid: (valid: number) => void): void {
-    let num = Math.floor(Math.random() * 2) + 1;
-    setLoginValid(num);
+async function loginSubmitHandler(username: string, password: string,
+    setLoginValid: (valid: number) => void): Promise<void> {
+    if (!username.length || !password.length) {
+        setLoginValid(1);
+    } else {
+        const data = await fetchWithTimeout(
+            './api/login',
+            {
+                headers: {
+                    'username': username,
+                    'password': password
+                }
+            }
+        );
+
+        if (data.status == 200) {
+            if (data.body) {
+                const responseBody = await data.body.getReader().read();
+
+                if (responseBody.value) {
+                    const responseText = new TextDecoder().decode(responseBody.value);
+
+                    if (responseText == 'valid') {
+                        setLoginValid(2);
+                        return;
+                    }
+                }
+            }
+        } else {
+            setLoginValid(3);
+            return;
+        }
+
+        setLoginValid(1);
+    }
 }
 
 function checkUsernameValidity(usernameString: string): boolean {
@@ -51,6 +80,9 @@ export default function Login() {
     } else if (loginValid == 1) {
         statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
         statusDivText = 'Your login credentials were incorrect. Please try again!';
+    } else if (loginValid == 3) {
+        statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
+        statusDivText = 'Unable to contact server! Please try again later.';
     } else {
         statusDivClassNames += ' opacity-0';
     }
@@ -63,10 +95,11 @@ export default function Login() {
             <div className={statusDivClassNames}>
                 <p>{statusDivText}</p>
             </div>
-            <div className="w-full flex flex-col gap-5 max-w-sm border-4 p-5 border-lightgrey rounded-xl">
+            <div className="w-full flex flex-col gap-5 max-w-sm border-4 p-5 border-lightgrey rounded-xl items-center">
                 <FormInputField
                     fieldName="Username"
                     type="text"
+                    invalidPrompt=""
                     setter={setUsernameString}
                     isValid={usernameValidity}
                     value={usernameString}
@@ -74,6 +107,7 @@ export default function Login() {
                 <FormInputField
                     fieldName="Password"
                     type="password"
+                    invalidPrompt=""
                     setter={setPasswordString}
                     isValid={passwordValidity}
                     value={passwordString}

@@ -9,12 +9,16 @@ export default function UserProfileInfo() {
     const [avatarEditModalOpen, setAvatarEditModalOpen] = useState(false);
 
     return (
-        <div>
-            <UserAvatar onClick={
-                () => {
-                    setAvatarEditModalOpen(true);
+        <div className="w-full">
+            <UserAvatar
+                onClick={
+                    () => {
+                        setAvatarEditModalOpen(true);
+                    }
                 }
-            }></UserAvatar>
+                userName="Sammy Anagolum"
+                userJoinDate="April 21 2003"
+            ></UserAvatar>
             <AvatarEditModal
                 isOpen={avatarEditModalOpen}
                 stateChanger={() => setAvatarEditModalOpen(false)}

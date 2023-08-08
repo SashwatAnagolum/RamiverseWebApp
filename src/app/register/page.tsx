@@ -4,22 +4,63 @@ import Button from "@/components/Button/Button";
 import FormInputField from "@/components/FormInputField/FormInputField";
 
 import { useState } from "react";
+import fetchWithTimeout from "../api/utils";
 
-// TODO: talk to server here. For now, just returning a random value.
-// 1 measn bad login
-// if it is a good login (2), set the global state to logged in.
-function registerSubmitHandler(username: string, password: string,
-    setLoginValid: (valid: number) => void): void {
-    let num = Math.floor(Math.random() * 2) + 1;
-    setLoginValid(num);
+async function registerSubmitHandler(username: string, password: string,
+    isUsernameValid: boolean, isPasswordValid: boolean,
+    setRegisterValid: (valid: number) => void): Promise<void> {
+    if (!isUsernameValid || !isPasswordValid) {
+        setRegisterValid(1);
+    } else {
+        const data = await fetchWithTimeout(
+            './api/registration',
+            {
+                headers: {
+                    'username': username,
+                    'password': password
+                }
+            }
+        );
+
+        if (data.status == 200) {
+            if (data.body) {
+                const responseBody = await data.body.getReader().read();
+
+                if (responseBody.value) {
+                    const responseText = new TextDecoder().decode(responseBody.value);
+
+                    if (responseText == 'valid') {
+                        setRegisterValid(2);
+                    } else if (responseText == 'nonunique') {
+                        setRegisterValid(3);
+                    } else {
+                        setRegisterValid(1);
+                    }
+
+                    return;
+                }
+            }
+        } else {
+            setRegisterValid(4);
+        }
+
+        setRegisterValid(1);
+    }
 }
 
 function checkUsernameValidity(usernameString: string): boolean {
-    return true;
+    return usernameString.length > 5 && !usernameString.includes(' ');
 }
 
 function checkPasswordValidity(passwordString: string): boolean {
-    return true;
+    const digitChecker = new RegExp('\\d');
+    const symbolChecker = new RegExp('[!@#$%^&*();:]');
+
+    return (
+        passwordString.length > 5 &&
+        digitChecker.test(passwordString) &&
+        symbolChecker.test(passwordString)
+    );
 }
 
 export default function Login() {
@@ -39,6 +80,12 @@ export default function Login() {
     } else if (registerValid == 1) {
         statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
         statusDivText = 'Please ensure that the chosen username and password are valid.';
+    } else if (registerValid == 3) {
+        statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
+        statusDivText = 'Chosen username is taken! Choose another username.';
+    } else if (registerValid == 4) {
+        statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
+        statusDivText = 'Unable to contact server! Please try again later.';
     } else {
         statusDivClassNames += ' opacity-100 border-darkgreen bg-lightgreen/30';
         statusDivText = 'Account creation successful.';
@@ -56,6 +103,7 @@ export default function Login() {
                 <FormInputField
                     fieldName="Username"
                     type="text"
+                    invalidPrompt="Usernames need to be atleast 5 characters long."
                     setter={setUsernameString}
                     isValid={usernameValidity}
                     value={usernameString}
@@ -63,6 +111,7 @@ export default function Login() {
                 <FormInputField
                     fieldName="Password"
                     type="password"
+                    invalidPrompt="Passwords need to be atleast 5 characters long, contain a number, and a special character."
                     setter={setPasswordString}
                     isValid={passwordValidity}
                     value={passwordString}
@@ -74,6 +123,7 @@ export default function Login() {
                     clickHandler={
                         () => registerSubmitHandler(
                             usernameString, passwordString,
+                            usernameValidity, passwordValidity,
                             setRegisterValid
                         )
                     }

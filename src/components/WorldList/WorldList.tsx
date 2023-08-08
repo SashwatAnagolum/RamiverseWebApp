@@ -1,6 +1,6 @@
 import WorldPreviewCard from '@/components/WorldPreviewCard/WorldPreviewCard';
 
-export default function WorldList() {
+export default async function WorldList() {
     const worldIDs: string[] = new Array(12);
 
     for (let i = 0; i < 14; i++) {
@@ -18,7 +18,7 @@ export default function WorldList() {
     )
 
     return (
-        <div className="m-5 columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-6">
+        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4">
             {worldCards}
         </div>
     );

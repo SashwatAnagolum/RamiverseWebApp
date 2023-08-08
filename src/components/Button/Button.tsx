@@ -18,7 +18,7 @@ export default function Button(props: ButtonProps) {
     }
 
     return (
-        <div>
+        <div className="w-full flex flex-col items-stretch">
             <button className={buttonStyles} onClick={() => props.clickHandler()}>
                 {props.text}
             </button>

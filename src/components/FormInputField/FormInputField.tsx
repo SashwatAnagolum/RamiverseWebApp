@@ -6,6 +6,7 @@ type FormInputFieldProps = {
     isValid: boolean;
     setter: (newString: string) => void;
     value: string;
+    invalidPrompt: string;
 };
 
 function usernameValidation(username: string): boolean {
@@ -26,16 +27,19 @@ export default function FormInputField(props: FormInputFieldProps) {
     validatorChoices.set('password', passwordValidation);
 
     let inputClassName: string = 'w-full p-2 rounded-lg border-2 border-lightgrey focus:outline-none';
+    let invalidTextClass: string = 'text-sm px-2 pt-2 text-darkred';
 
-    if (props.isValid) {
+    if (props.isValid || (props.value.length == 0)) {
         inputClassName += ' focus:border-darkgrey';
+        invalidTextClass += ' opacity-0';
     } else {
         inputClassName += ' focus:border-darkred focus:bg-lightred';
+        invalidTextClass += ' opacity-100';
     }
 
     return (
         <div className="w-full flex flex-col items-start">
-            <p className="text-sm text-darkgrey pl-2 pb-1">{props.fieldName}</p>
+            <p className="text-sm text-darkgrey px-2 pb-1">{props.fieldName}</p>
             <input
                 className={inputClassName}
                 type={props.type}
@@ -46,6 +50,7 @@ export default function FormInputField(props: FormInputFieldProps) {
                     }
                 }
             />
+            <p className={invalidTextClass}>{props.invalidPrompt}</p>
         </div>
     );
 

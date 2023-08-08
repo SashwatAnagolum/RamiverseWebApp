@@ -106,14 +106,19 @@ export default function AvatarEditModal(props: AvatarEditModalProps) {
                     onChange={() => handleFileSelection(fileInputRef, imageRef, setValidUpload, setURL)}
                 ></input>
                 <div className="absolute top-0 left-0 w-full flex flex-col items-end p-5 gap-y-5">
-                    <CloseButton stateChanger={props.stateChanger}></CloseButton>
+                    <CloseButton stateChanger={
+                        () => {
+                            props.stateChanger();
+                            setValidUpload(0);
+                        }
+                    }></CloseButton>
                 </div>
                 <div className="max-w-screen-xl mx-auto mt-5 flex flex-col gap-y-5">
                     <h2 className="page-title mx-5">Edit Avatar</h2>
                     <p className="mx-5">
                         Choose an image to set as your new avatar. The image must be atleast 300 x 300 pixels.
                     </p>
-                    <div className="mx-5">
+                    <div className="px-5 w-full sm:w-max">
                         <Button
                             text="Choose image"
                             type="redirect"

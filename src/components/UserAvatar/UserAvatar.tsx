@@ -7,6 +7,8 @@ import { useState } from 'react';
 
 type UserAvatarProps = {
     onClick: () => void;
+    userName: string;
+    userJoinDate: string;
 }
 
 export default function UserAvatar(props: UserAvatarProps) {
@@ -26,7 +28,7 @@ export default function UserAvatar(props: UserAvatarProps) {
     }
 
     return (
-        <div className="flex flex-row justify-around relative w-full">
+        <div className="flex flex-col items-center relative gap-y-5">
             <div className={imageDivClasses}>
                 <Image
                     src={jack}
@@ -49,6 +51,10 @@ export default function UserAvatar(props: UserAvatarProps) {
                 >
                     <p>Change Avatar</p>
                 </div>
+            </div>
+            <div className="flex flex-col items-center">
+                <p className="text-lg font-bold">{props.userName}</p>
+                <p>Joined {props.userJoinDate}</p>
             </div>
         </div>
     )

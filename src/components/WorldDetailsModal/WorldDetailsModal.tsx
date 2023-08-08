@@ -36,7 +36,7 @@ export default function WorldDetailsModal(props: WorldDetailsProps) {
                         <h2 className="page-title">{props.worldInfo.worldName}</h2>
                         <p>{props.worldInfo.worldUploader}</p>
                     </div>
-                    <div className="mx-5">
+                    <div className="mx-5 sm:w-max">
                         <Button
                             text="Explore World"
                             type="redirect"

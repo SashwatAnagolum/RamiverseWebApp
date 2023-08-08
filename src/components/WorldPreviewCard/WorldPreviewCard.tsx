@@ -103,8 +103,11 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                 <div className="flex flex-row flex-wrap py-2 text-xs gap-1">
                     {
                         sampleWorldInfo.worldTags.map(
-                            tag => (
-                                <p className="px-3 py-1 bg-darkgrey text-white rounded-2xl">{tag}</p>
+                            (tag, index) => (
+                                <p
+                                    className="px-3 py-1 bg-darkgrey text-white rounded-2xl"
+                                    key={index}
+                                >{tag}</p>
                             )
                         )
                     }
