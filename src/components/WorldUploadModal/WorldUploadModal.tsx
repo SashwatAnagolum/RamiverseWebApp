@@ -95,6 +95,7 @@ export default function WorldUploadModal(props: WorldUploadModalProps) {
     const [validUpload, setValidUpload] = useState(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
+    let buttonText: string;
 
     let urlString: string;
     let imageClassName: string;
@@ -181,14 +182,32 @@ export default function WorldUploadModal(props: WorldUploadModalProps) {
                         ></FormInputField>
                     </div>
 
-                    <div className="px-5 w-full sm:w-max">
-                        <Button
-                            text="Choose World"
-                            type="redirect"
-                            theme="blue"
-                            clickHandler={() => handleWorldUploadRequest(fileInputRef)}
-                        ></Button>
+                    <div className="flex flex-col sm:flex-row sm:place-content-between gap-8">
+                        <div className="px-5 w-full sm:w-fit flex flex-col sm:flex-row gap-8 overflow-hidden justify-items-start">
+                            <Button
+                                text="Choose World"
+                                type="redirect"
+                                theme="blue"
+                                clickHandler={() => handleWorldUploadRequest(fileInputRef)}
+                            ></Button>
+
+                            <Button
+                                text="Add Screenshots"
+                                type="redirect"
+                                theme="blue"
+                                clickHandler={() => handleWorldUploadRequest(fileInputRef)}
+                            ></Button>
+                        </div>
+                        <div className="mx-5 sm:w-fit">
+                            <Button
+                                text="Submit"
+                                type="redirect"
+                                theme="blue"
+                                clickHandler={() => handleWorldUploadRequest(fileInputRef)}
+                            ></Button>
+                        </div>
                     </div>
+
                     <div className="w-full flex flex-col items-center px-5">
                         <div className={statusDivClassNames}>
                             <p>{statusDivText}</p>

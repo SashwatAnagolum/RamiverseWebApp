@@ -9,7 +9,7 @@ type ButtonProps = {
 
 export default function Button(props: ButtonProps) {
     let buttonStyles: string;
-    buttonStyles = "px-5 py-2 rounded-md w-full sm:w-auto";
+    buttonStyles = "px-5 py-2 rounded-md w-full sm:min-w-max";
     let clickHandler: () => void;
 
     if (!props.clickHandler) {

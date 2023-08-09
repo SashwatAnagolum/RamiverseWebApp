@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import logo from '../../assets/logo2.png';
+
 
 type TopNavProps = {
     menuItems: string[];
@@ -95,9 +98,15 @@ export default function TopNav(props: TopNavProps) {
 
     return (
         <div className="w-full sticky top-0 z-50">
-            <div className="w-full bg-midnightblue flex flex-row pl-10 pr-5 py-5 justify-between">
+            <div className="w-full bg-midnightblue flex flex-row pl-6 md:pl-8 lg:pl-10 pr-5 py-5 justify-between">
                 <Link href="/" className="flex flex-col justify-center">
-                    <p className="text-white font-bold">Ramiverse</p>
+                    <div className='mr-6'>
+                        <Image
+                            src={logo}
+                            alt="Logo"
+                            height={"25"}
+                        />
+                    </div>
                 </Link>
 
                 <DesktopMenuItemList menuItems={props.menuItems}></DesktopMenuItemList>
