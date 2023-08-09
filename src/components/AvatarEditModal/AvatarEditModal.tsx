@@ -138,7 +138,7 @@ export default function AvatarEditModal(props: AvatarEditModalProps) {
 
     if (props.isOpen) {
         modal = (
-            <div className="absolute top-0 left-0 w-screen h-screen bg-white z-50">
+            <div className="duration-100 fixed top-0 left-0 h-screen w-screen bg-white z-50 overflow-y-scroll hide-scrollbar lg:px-24">
                 <input
                     type="file"
                     ref={fileInputRef}
