@@ -62,7 +62,8 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
     const [isHoveredOn, setIsHoveredOn] = useState(false);
     const [imageURLs, setImageURLs] = useState(new Array());
     const [modalOpen, setModalOpen] = useState(false);
-    const [isGettingImages, setIsGettingImages] = useState(true);
+
+    const worldExploreURL = 'explore?world=' + props.worldURLSlug.split('/')[1];
 
     useEffect(
         () => {
@@ -171,7 +172,7 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                     worldTags={props.worldTags}
                     worldName={props.worldName}
                     worldCreator={props.worldCreator}
-                    worldExplorePageURL={props.worldURLSlug.replace('worlds', 'explore')}
+                    worldExplorePageURL={worldExploreURL}
                     imageURLs={imageURLs}
                     stateChanger={
                         () => {

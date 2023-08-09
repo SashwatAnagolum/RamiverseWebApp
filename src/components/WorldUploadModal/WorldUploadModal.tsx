@@ -60,7 +60,8 @@ async function uploadWorld(worldInputRef: RefObject<HTMLInputElement>,
         worldTags.length
     ) {
         const worldUploadStatus = await uploadFileToS3(
-            'worlds/' + worldName + '/world', worldInputRef.current.files[0],
+            'worlds/' + worldName.replace(' ', '_').toLowerCase() + '/world',
+            worldInputRef.current.files[0],
             setValidUpload
         );
 

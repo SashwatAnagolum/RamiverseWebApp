@@ -23,7 +23,7 @@ export async function GET(request: Request) {
             'title': worldName,
             'tags': worldTagsList,
             'description': worldDesc,
-            'urlSlug': worldName.replaceAll(' ', '_')
+            'urlSlug': worldName.replaceAll(' ', '_').toLowerCase()
         }
 
         const dbResponse = await worldTable.insertOne(worldObj);
