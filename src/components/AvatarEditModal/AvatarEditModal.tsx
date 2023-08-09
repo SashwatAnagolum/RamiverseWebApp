@@ -181,6 +181,7 @@ export default function AvatarEditModal(props: AvatarEditModalProps) {
                             ref={imageRef}
                             className={imageClassName}
                             fetchPriority="high"
+                            alt=""
                             onLoad={
                                 () => handleImageLoad(
                                     imageRef, setValidUpload, getURL,

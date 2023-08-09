@@ -85,7 +85,7 @@ export default function WorldList(props: WorldListProps) {
                     setIsLoading(false);
                 }
             );
-        }, [pageNumber]
+        }, [pageNumber, props.userID]
     );
 
     if (isLoading) {

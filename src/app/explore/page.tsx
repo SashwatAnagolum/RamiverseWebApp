@@ -18,8 +18,8 @@ export default function Explore() {
         width={1280}
         style={{ width: 1280, height: 720 }}
       ></canvas>
-      <script type="text/javascript" src="/Build/Build.loader.js"></script>
-      <script type="text/javascript" src="/scripts/script.js"></script>
+      <script type="text/javascript" src="/Build/Build.loader.js" defer></script>
+      <script type="text/javascript" src="/scripts/script.js" defer></script>
     </div>
   );
 }
