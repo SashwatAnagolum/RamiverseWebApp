@@ -9,91 +9,138 @@ import { RefObject, useEffect, useRef, useState } from "react";
 
 type WorldUploadModalProps = {
     isOpen: boolean;
+    userID: string;
     stateChanger: () => void;
 }
 
-function handleWorldUploadRequest(inputRef: RefObject<HTMLInputElement>) {
+function handleFileUploadRequest(inputRef: RefObject<HTMLInputElement>) {
     if (inputRef.current) {
         inputRef.current.click();
     }
 }
 
-async function uploadWorld(inputRef: RefObject<HTMLInputElement>,
-    setValidUpload: (num: number) => void) {
-    if (inputRef.current && inputRef.current.files) {
-        const data = await fetchWithTimeout(
-            './api/presigned',
-            {
-                headers: {
-                    'request-type': 'put',
-                    'filename': 'user-world'
-                }
+async function uploadFileToS3(filePath: string,
+    fileToUpload: File, setValidUpload: (num: number) => void): Promise<boolean | void> {
+    const data = await fetchWithTimeout(
+        './api/presigned',
+        {
+            headers: {
+                'request-type': 'put',
+                'filename': filePath
             }
-        );
-
-        const signedURL = await data.body?.getReader().read().then(
-            (resp) => new TextDecoder().decode(resp.value)
-        );
-
-        if (signedURL) {
-            const xhr = new XMLHttpRequest();
-
-            xhr.open('PUT', signedURL);
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4 && xhr.status == 200) {
-                    setValidUpload(2);
-                }
-            }
-
-            xhr.send(inputRef.current.files[0]);
-        } else {
-            setValidUpload(3);
         }
-    } else {
-        setValidUpload(3);
+    );
+
+    const signedURL = await data.body?.getReader().read().then(
+        (resp) => new TextDecoder().decode(resp.value)
+    );
+
+    if (fileToUpload && signedURL) {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('PUT', signedURL);
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4 && xhr.status != 200) {
+                setValidUpload(2);
+                return false;
+            }
+        }
+
+        xhr.send(fileToUpload);
     }
 }
 
-function handleFileSelection(inputRef: RefObject<HTMLInputElement>,
-    imageRef: RefObject<HTMLImageElement>,
-    setValidUpload: (valid: number) => void,
-    setURLString: (str: string) => void) {
+async function uploadWorld(worldInputRef: RefObject<HTMLInputElement>,
+    worldName: string, worldTags: string, userID: string, worldDesc: string,
+    setValidUpload: (num: number) => void): Promise<boolean | void> {
     if (
-        inputRef.current &&
-        imageRef.current &&
-        inputRef.current.files &&
-        inputRef.current.files.length &&
-        inputRef.current.files[0].type.includes('image')
+        worldInputRef.current &&
+        worldInputRef.current.files &&
+        worldName.length &&
+        worldTags.length
     ) {
-        let imageURL = window.URL.createObjectURL(inputRef.current.files[0]);
-        setURLString(imageURL);
-        imageRef.current.src = imageURL;
+        const worldUploadStatus = await uploadFileToS3(
+            'worlds/' + worldName + '/world', worldInputRef.current.files[0],
+            setValidUpload
+        );
+
+        const response = await fetchWithTimeout(
+            './api/worldupload',
+            {
+                headers: {
+                    'worldName': worldName,
+                    'worldTags': worldTags,
+                    'worldCreator': userID,
+                    'worldDesc': worldDesc
+                }
+            }
+        );
+
+        if (response.status != 200) {
+            setValidUpload(2);
+            return false;
+        }
     } else {
         setValidUpload(1);
     }
 }
 
-function handleImageLoad(imageRef: RefObject<HTMLImageElement>,
-    setValidUpload: (valid: number) => void, getURLString: () => string,
-    inputRef: RefObject<HTMLInputElement>) {
-    if (imageRef.current) {
-        if (
-            (imageRef.current.naturalWidth < 300) ||
-            (imageRef.current.naturalHeight < 300)
-        ) {
-            window.URL.revokeObjectURL(getURLString());
-            setValidUpload(1);
-        } else {
-            uploadWorld(inputRef, setValidUpload);
+async function uploadScreenshots(screenshotsInputRef: RefObject<HTMLInputElement>,
+    worldName: string, setValidUpload: (num: number) => void): Promise<boolean | void> {
+    if (
+        screenshotsInputRef.current &&
+        screenshotsInputRef.current.files
+    ) {
+        for (let i = 0; i < screenshotsInputRef.current.files.length; i++) {
+            uploadFileToS3(
+                'worlds/' + worldName + '/images/screenshot_' + i + '.png',
+                screenshotsInputRef.current.files[i],
+                setValidUpload
+            ).then(
+                (resp) => {
+                    if (resp === false) {
+                        setValidUpload(2);
+                        return false;
+                    }
+                }
+            )
         }
+    } else {
+        setValidUpload(1);
+    }
+}
+
+async function handleSubmitRequest(worldInputRef: RefObject<HTMLInputElement>,
+    screenshotsInputRef: RefObject<HTMLInputElement>,
+    setValidUpload: (num: number) => void, worldName: string,
+    worldTags: string, worldDesc: string, userID: string) {
+    if (
+        worldInputRef && screenshotsInputRef &&
+        worldInputRef.current && screenshotsInputRef.current &&
+        worldInputRef.current.files && screenshotsInputRef.current.files &&
+        worldInputRef.current.files.length && screenshotsInputRef.current.files.length &&
+        worldTags.length && worldName.length &&
+        worldDesc.length
+    ) {
+        const retVal1 = await uploadWorld(worldInputRef, worldName, worldTags, userID, worldDesc, setValidUpload);
+        const retVal2 = await uploadScreenshots(screenshotsInputRef, worldName, setValidUpload);
+
+        if ((retVal1 == null) && (retVal2 == null)) {
+            setValidUpload(3);
+        }
+    } else {
+        setValidUpload(1);
     }
 }
 
 export default function WorldUploadModal(props: WorldUploadModalProps) {
     const [worldNameString, setWorldNameString] = useState('');
     const [worldTagString, setWorldTagString] = useState('');
+    const [worldDescString, setWorldDescString] = useState('');
     const [validUpload, setValidUpload] = useState(0);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const worldInputRef = useRef<HTMLInputElement>(null);
+    const screenshotsInputRef = useRef<HTMLInputElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
     let buttonText: string;
 
@@ -112,26 +159,18 @@ export default function WorldUploadModal(props: WorldUploadModalProps) {
         }
     );
 
-    function setURL(str: string) {
-        urlString = str;
-    }
-
-    function getURL() {
-        return urlString;
-    }
-
-    if (validUpload == 2) {
+    if (validUpload == 3) {
         imageClassName = 'relative top-0 left-0 w-full h-full rounded-full object-cover overflow-clip';
         statusDivClassNames += ' opacity-100 border-darkgreen bg-lightgreen/30';
-        statusDivText = 'Cool choice! Updating your world now.';
+        statusDivText = 'Awesome world! Listing it on the public worlds page soon!';
     } else if (validUpload == 1) {
         imageClassName = 'hidden';
         statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
-        statusDivText = 'Please ensure that the chosen file is an image and is big enough!.';
-    } else if (validUpload == 3) {
+        statusDivText = 'Please ensure that the file dropboxes and text boxes are nonempty!.';
+    } else if (validUpload == 2) {
         imageClassName = 'hidden';
         statusDivClassNames += ' opacity-100 border-darkred bg-lightred/30';
-        statusDivText = 'Encountered an error during image upload! Please try again later.';
+        statusDivText = 'Encountered an error during file uploading! Please try again later.';
     } else {
         imageClassName = 'hidden';
         statusDivClassNames += ' opacity-0';
@@ -145,10 +184,18 @@ export default function WorldUploadModal(props: WorldUploadModalProps) {
             <div className="duration-100 fixed top-0 left-0 h-screen w-screen bg-white z-50 overflow-y-scroll hide-scrollbar lg:px-24">
                 <input
                     type="file"
-                    ref={fileInputRef}
+                    ref={worldInputRef}
+                    className="hidden"
+                    accept=""
+                    onChange={() => { }}
+                ></input>
+                <input
+                    type="file"
+                    multiple
+                    ref={screenshotsInputRef}
                     className="hidden"
                     accept="image/*"
-                    onChange={() => handleFileSelection(fileInputRef, imageRef, setValidUpload, setURL)}
+                    onChange={() => { }}
                 ></input>
                 <div className="absolute top-0 left-0 w-full flex flex-col items-end p-5 gap-y-5">
                     <CloseButton stateChanger={
@@ -163,22 +210,30 @@ export default function WorldUploadModal(props: WorldUploadModalProps) {
                     <p className="mx-5">
                         Choose worlds to upload.
                     </p>
-                    <div className="px-5">
+                    <div className="px-5 flex flex-col gap-y-5">
                         <FormInputField
                             fieldName="World Name"
                             type="text"
-                            invalidPrompt="World names need to be atleast 5 characters long, contain a number, and a special character."
+                            invalidPrompt=""
                             setter={setWorldNameString}
                             isValid={true}
                             value={worldNameString}
                         ></FormInputField>
                         <FormInputField
-                            fieldName="World Tags"
+                            fieldName="World Tags (comma separated)"
                             type="text"
-                            invalidPrompt="World tags need to be atleast 5 characters long, contain a number, and a special character."
+                            invalidPrompt=""
                             setter={setWorldTagString}
                             isValid={true}
                             value={worldTagString}
+                        ></FormInputField>
+                        <FormInputField
+                            fieldName="World Description (short)"
+                            type="text"
+                            invalidPrompt=""
+                            setter={setWorldDescString}
+                            isValid={true}
+                            value={worldDescString}
                         ></FormInputField>
                     </div>
 
@@ -188,14 +243,14 @@ export default function WorldUploadModal(props: WorldUploadModalProps) {
                                 text="Choose World"
                                 type="redirect"
                                 theme="blue"
-                                clickHandler={() => handleWorldUploadRequest(fileInputRef)}
+                                clickHandler={() => handleFileUploadRequest(worldInputRef)}
                             ></Button>
 
                             <Button
                                 text="Add Screenshots"
                                 type="redirect"
                                 theme="blue"
-                                clickHandler={() => handleWorldUploadRequest(fileInputRef)}
+                                clickHandler={() => handleFileUploadRequest(screenshotsInputRef)}
                             ></Button>
                         </div>
                         <div className="mx-5 sm:w-fit">
@@ -203,7 +258,14 @@ export default function WorldUploadModal(props: WorldUploadModalProps) {
                                 text="Submit"
                                 type="redirect"
                                 theme="blue"
-                                clickHandler={() => handleWorldUploadRequest(fileInputRef)}
+                                clickHandler={
+                                    () => handleSubmitRequest(
+                                        worldInputRef,
+                                        screenshotsInputRef,
+                                        setValidUpload, worldNameString,
+                                        worldTagString, worldDescString, props.userID
+                                    )
+                                }
                             ></Button>
                         </div>
                     </div>
@@ -212,16 +274,6 @@ export default function WorldUploadModal(props: WorldUploadModalProps) {
                         <div className={statusDivClassNames}>
                             <p>{statusDivText}</p>
                         </div>
-                    </div>
-                </div>
-                <div className="flex flex-col m-5 items-center">
-                    <div className="w-64 h-64">
-                        <img
-                            ref={imageRef}
-                            className={imageClassName}
-                            fetchPriority="high"
-                            onLoad={() => handleImageLoad(imageRef, setValidUpload, getURL, fileInputRef)}
-                        ></img>
                     </div>
                 </div>
             </div>

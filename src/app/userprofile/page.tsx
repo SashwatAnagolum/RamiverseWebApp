@@ -29,7 +29,9 @@ export default function UserProfile() {
                         </div>
                     </div>
                     <div className="md:basis-1/2 lg:basis-2/3">
-                        <WorldUploader></WorldUploader>
+                        <WorldUploader
+                            userID={userDetails.userID}
+                        ></WorldUploader>
                     </div>
                 </div>
                 <div className="m-5">
@@ -41,11 +43,8 @@ export default function UserProfile() {
         return (
             <div className="w-full max-w-screen-xl mx-auto">
                 <div className="m-5 flex flex-col justify-items-center gap-y-5 md:flex-row">
-                    <p>Please login first!</p>
                 </div>
             </div>
         )
     }
-
-
 }

@@ -25,6 +25,7 @@ export async function GET(request: Request) {
 
         if (data) {
             const dataDoc: Document = data;
+
             response = new Response(dataDoc._id.toString(), { status: 200 });
         } else {
             response = new Response(null, { status: 200 });
