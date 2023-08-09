@@ -8,6 +8,8 @@ import { RefObject, useEffect, useRef, useState } from "react";
 
 type AvatarEditModalProps = {
     isOpen: boolean;
+    username: string;
+    userID: string;
     stateChanger: () => void;
 }
 
@@ -18,14 +20,14 @@ function handleAvatarChangeRequest(inputRef: RefObject<HTMLInputElement>) {
 }
 
 async function uploadImage(inputRef: RefObject<HTMLInputElement>,
-    setValidUpload: (num: number) => void) {
+    setValidUpload: (num: number) => void, userID: string) {
     if (inputRef.current && inputRef.current.files) {
         const data = await fetchWithTimeout(
             './api/presigned',
             {
                 headers: {
                     'request-type': 'put',
-                    'filename': 'user-avatar'
+                    'filename': 'users/' + userID + '/user-avatar'
                 }
             }
         );
@@ -74,7 +76,7 @@ function handleFileSelection(inputRef: RefObject<HTMLInputElement>,
 
 function handleImageLoad(imageRef: RefObject<HTMLImageElement>,
     setValidUpload: (valid: number) => void, getURLString: () => string,
-    inputRef: RefObject<HTMLInputElement>) {
+    inputRef: RefObject<HTMLInputElement>, userID: string) {
     if (imageRef.current) {
         if (
             (imageRef.current.naturalWidth < 300) ||
@@ -83,7 +85,7 @@ function handleImageLoad(imageRef: RefObject<HTMLImageElement>,
             window.URL.revokeObjectURL(getURLString());
             setValidUpload(1);
         } else {
-            uploadImage(inputRef, setValidUpload);
+            uploadImage(inputRef, setValidUpload, userID);
         }
     }
 }
@@ -179,7 +181,12 @@ export default function AvatarEditModal(props: AvatarEditModalProps) {
                             ref={imageRef}
                             className={imageClassName}
                             fetchPriority="high"
-                            onLoad={() => handleImageLoad(imageRef, setValidUpload, getURL, fileInputRef)}
+                            onLoad={
+                                () => handleImageLoad(
+                                    imageRef, setValidUpload, getURL,
+                                    fileInputRef, props.userID
+                                )
+                            }
                         ></img>
                     </div>
                 </div>

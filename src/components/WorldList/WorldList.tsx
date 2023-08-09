@@ -6,7 +6,7 @@ import WorldPreviewCard from '@/components/WorldPreviewCard/WorldPreviewCard';
 import { useEffect, useState } from 'react';
 
 type WorldListProps = {
-    user: string;
+    userID: string;
 }
 
 type WorldInfo = {
@@ -18,14 +18,14 @@ type WorldInfo = {
     worldCreatorName: string;
 }
 
-async function fetchWorldData(pageNumber: number, username: string): Promise<WorldInfo[]> {
+async function fetchWorldData(pageNumber: number, userID: string): Promise<WorldInfo[]> {
     let worldsData: WorldInfo[] = new Array();
 
     const response = await fetchWithTimeout(
         './api/worlds',
         {
             headers: {
-                'username': username,
+                'userID': userID,
                 'page': pageNumber,
                 'pageSize': '10'
             }
@@ -79,7 +79,7 @@ export default function WorldList(props: WorldListProps) {
 
     useEffect(
         () => {
-            fetchWorldData(pageNumber, '').then(
+            fetchWorldData(pageNumber, props.userID).then(
                 (result) => {
                     setWorldsData(result);
                     setIsLoading(false);
@@ -88,7 +88,7 @@ export default function WorldList(props: WorldListProps) {
         }, [pageNumber]
     );
 
-    if (isLoading || (worldsData.length == 0)) {
+    if (isLoading) {
         worldCards = indices.map(
             function (index: number) {
                 return (

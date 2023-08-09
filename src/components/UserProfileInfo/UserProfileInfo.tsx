@@ -3,9 +3,14 @@
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
 import AvatarEditModal from '../AvatarEditModal/AvatarEditModal';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function UserProfileInfo() {
+type UserProfileInfoProps = {
+    username: string;
+    userID: string;
+}
+
+export default function UserProfileInfo(props: UserProfileInfoProps) {
     const [avatarEditModalOpen, setAvatarEditModalOpen] = useState(false);
 
     return (
@@ -16,14 +21,15 @@ export default function UserProfileInfo() {
                         setAvatarEditModalOpen(true);
                     }
                 }
-                userName="Sammy Anagolum"
-                userJoinDate="April 21 2003"
-                userID=""
+                username={props.username}
+                userID={props.userID}
             ></UserAvatar>
             <AvatarEditModal
                 isOpen={avatarEditModalOpen}
+                username={props.username}
+                userID={props.userID}
                 stateChanger={() => setAvatarEditModalOpen(false)}
             ></AvatarEditModal>
         </div>
-    )
+    );
 }

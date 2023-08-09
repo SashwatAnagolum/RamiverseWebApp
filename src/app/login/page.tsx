@@ -30,7 +30,10 @@ async function loginSubmitHandler(username: string, password: string,
                 if (responseBody.value) {
                     const responseText = new TextDecoder().decode(responseBody.value);
 
-                    if (responseText == 'valid') {
+                    if (responseText != 'invalid') {
+                        localStorage.setItem('username', username);
+                        localStorage.setItem('userID', responseText);
+
                         setLoginValid(2);
                         return;
                     }
@@ -85,6 +88,7 @@ export default function Login() {
         statusDivText = 'Unable to contact server! Please try again later.';
     } else {
         statusDivClassNames += ' opacity-0';
+        statusDivText = '<br><br>';
     }
 
     return (

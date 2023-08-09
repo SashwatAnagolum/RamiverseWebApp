@@ -1,14 +1,12 @@
 'use client'
 
 import Image from 'next/image';
-import jack from './../../assets/jack.png';
 
 import { useState } from 'react';
 
 type UserAvatarProps = {
     onClick: () => void;
-    userName: string;
-    userJoinDate: string;
+    username: string;
     userID: string;
 }
 
@@ -16,10 +14,10 @@ export default function UserAvatar(props: UserAvatarProps) {
     const [isHoveredOn, setIsHoveredOn] = useState(false);
     let imageDivClasses: string, darkModalClasses: string, userAvatarURL: string;
 
-    if (props.userID == '') {
+    if (props.username == '') {
         userAvatarURL = 'https://cdn.ramiverse.xyz/user-avatar';
     } else {
-        userAvatarURL = 'https://cdn.ramiverse.xyz/' + props.userID + '/user-avatar';
+        userAvatarURL = 'https://cdn.ramiverse.xyz/users/' + props.userID + '/user-avatar';
     }
 
     darkModalClasses = 'absolute top-0 bottom-0 left-0 right-0 m-auto' +
@@ -41,7 +39,7 @@ export default function UserAvatar(props: UserAvatarProps) {
                     src={userAvatarURL}
                     width={1000}
                     height={1000}
-                    alt="Jack Avatar"
+                    alt=""
                     className="rounded-full h-64 w-64 object-cover"
                 />
                 <div
@@ -62,8 +60,7 @@ export default function UserAvatar(props: UserAvatarProps) {
                 </div>
             </div>
             <div className="flex flex-col items-center">
-                <p className="text-lg font-bold">{props.userName}</p>
-                <p>Joined {props.userJoinDate}</p>
+                <p className="text-lg font-bold">{props.username}</p>
             </div>
         </div>
     )

@@ -13,7 +13,7 @@ export async function GET(request: Request) {
         let data = await userTable.findOne({ 'username': username, 'password': password });
 
         if (data) {
-            response = new Response('valid', { status: 200 });
+            response = new Response(data._id.toString(), { status: 200 });
         } else {
             response = new Response('invalid', { status: 200 });
         }

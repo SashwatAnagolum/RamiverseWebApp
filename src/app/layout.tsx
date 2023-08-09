@@ -1,7 +1,7 @@
-import './globals.css'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import './globals.css';
 
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import TopNav from '@/components/TopNav/TopNav';
 import Footer from '@/components/Footer/Footer';
 
@@ -12,18 +12,15 @@ export const metadata: Metadata = {
 	description: 'Explore and upload virtual worlds',
 };
 
-export default function RootLayout({
-	children,
-}: {
-	children: React.ReactNode
-}) {
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
 	let menuItemNames: string[] = new Array();
 	menuItemNames.push("Public Worlds");
 	menuItemNames.push("User Profile");
 	menuItemNames.push("Log In");
 	menuItemNames.push('Register');
 
-	const bodyClassName: string = inter.className + " min-h-screen flex flex-col"
+	const bodyClassName: string = inter.className + " min-h-screen flex flex-col";
 
 	return (
 		<html lang="en">

@@ -171,6 +171,7 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                     worldTags={props.worldTags}
                     worldName={props.worldName}
                     worldCreator={props.worldCreator}
+                    worldExplorePageURL={props.worldURLSlug.replace('worlds', 'explore')}
                     imageURLs={imageURLs}
                     stateChanger={
                         () => {

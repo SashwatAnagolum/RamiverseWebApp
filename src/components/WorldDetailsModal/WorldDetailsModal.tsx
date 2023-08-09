@@ -3,6 +3,8 @@ import CloseButton from "../CloseButton/CloseButton";
 import Button from "../Button/Button";
 
 import { useEffect } from 'react';
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 
 type WorldDetailsProps = {
@@ -12,6 +14,7 @@ type WorldDetailsProps = {
     worldTags: string[];
     imageURLs: string[];
     worldDesc: string;
+    worldExplorePageURL: string;
     stateChanger: () => void;
 }
 
@@ -40,12 +43,14 @@ export default function WorldDetailsModal(props: WorldDetailsProps) {
                         <p>{props.worldCreator}</p>
                     </div>
                     <div className="mx-5 sm:w-max">
-                        <Button
-                            text="Explore World"
-                            type="redirect"
-                            theme="blue"
-                            clickHandler={() => { }}
-                        ></Button>
+                        <Link href={props.worldExplorePageURL}>
+                            <Button
+                                text="Explore World"
+                                type="redirect"
+                                theme="blue"
+                                clickHandler={() => { }}
+                            ></Button>
+                        </Link>
                     </div>
                     <div className="mx-5">
                         <p className="font-bold">World Screenshots</p>

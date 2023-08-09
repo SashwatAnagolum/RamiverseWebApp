@@ -5,15 +5,17 @@ export async function GET(request: Request) {
     const client = await clientPromise;
     const worldTable = client.db('ramiverse').collection('worlds');
 
-    const username = request.headers.get('username');
+    const userID = request.headers.get('userID');
     const pageNum = parseInt(request.headers.get('page') + '');
     const pageSize = parseInt(request.headers.get('pageSize') + '');
 
     let response: Response, data;
     let worldData = new Array();
 
-    if (username?.length) {
-        data = worldTable.find().sort('_id').skip(pageSize * pageNum).limit(pageSize);
+    if (userID?.length) {
+        const userIDObj = new ObjectId(userID);
+
+        data = worldTable.find({ 'builder': userIDObj }).sort('_id').skip(pageSize * pageNum).limit(pageSize);
     } else {
         data = worldTable.find({}).sort('_id').skip(pageSize * pageNum).limit(pageSize);
     }
