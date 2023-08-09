@@ -16,7 +16,7 @@ export default function UserProfile() {
         }, [userDetails.userID]
     )
 
-    if (userDetails.userID.length) {
+    if (userDetails.userID.length > 0 && (userDetails.userID != 'null')) {
         return (
             <div className="w-full max-w-screen-xl mx-auto">
                 <div className="m-5 flex flex-col justify-items-center gap-y-5 md:flex-row">
