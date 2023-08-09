@@ -1,11 +1,10 @@
 'use client'
 
-import Image from 'next/image';
-
-import { useState } from 'react';
-import Link from 'next/link';
-
+import fetchWithTimeout from '@/app/api/utils';
 import WorldDetailsModal from '../WorldDetailsModal/WorldDetailsModal';
+
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 type WorldPreviewCardProps = {
     imageID: number;
@@ -13,36 +12,74 @@ type WorldPreviewCardProps = {
     showLoading: boolean;
     worldCreator: string;
     worldURLSlug: string;
+    worldTags: string[];
+    worldDesc: string;
 };
+
+async function fetchImageURLS(urlSlug: string): Promise<string[]> {
+    let signedURL, response, urlsString, urlsXML;
+    let imageURLs: string[] = new Array();
+
+    response = await fetchWithTimeout(
+        './api/presigned',
+        {
+            headers: {
+                'request-type': 'getAll',
+                'delimiter': '/',
+                'prefix': urlSlug + '/images/',
+                'maxKeys': 10
+            }
+        }
+    );
+
+    if (response.status == 200 && response.body) {
+        signedURL = new TextDecoder().decode(
+            (await response.body.getReader().read()).value
+        );
+    }
+
+    response = await fetchWithTimeout(signedURL + '');
+
+    if (response.status == 200 && response.body) {
+        urlsString = new TextDecoder().decode(
+            (await response.body.getReader().read()).value
+        );
+
+        urlsXML = new DOMParser().parseFromString(urlsString, 'text/xml');
+        urlsXML = urlsXML.getElementsByTagName('Key');
+
+        for (let i = 0; i < urlsXML.length; i++) {
+            if (urlsXML[i].textContent?.includes('.png')) {
+                imageURLs.push('https://cdn.ramiverse.xyz/' + urlsXML[i].textContent + '');
+            }
+        }
+    }
+
+    return imageURLs;
+}
 
 export default function WorldPreviewCard(props: WorldPreviewCardProps) {
     const [isHoveredOn, setIsHoveredOn] = useState(false);
+    const [imageURLs, setImageURLs] = useState(new Array());
     const [modalOpen, setModalOpen] = useState(false);
+    const [isGettingImages, setIsGettingImages] = useState(true);
+
+    useEffect(
+        () => {
+            fetchImageURLS(props.worldURLSlug).then(
+                imgUrls => {
+                    setImageURLs(imgUrls);
+                }
+            );
+        }, [props.worldURLSlug]
+    );
 
     const loadingHeights = [64, 96, 48];
 
-    const worldImages = [
-        'https://w.forfun.com/fetch/b1/b1316c4d8b836fa03c34e779f912f667.jpeg',
-        'https://p4.wallpaperbetter.com/wallpaper/44/698/537/minecraft-natural-scenery-hd-wallpaper-preview.jpg',
-        'https://wallpapers.com/images/high/tall-tree-mobs-minecraft-iphone-4jjs9tvjjv377jbe.webp',
-        'https://wallpapers.com/images/high/minecraft-aesthetic-green-lake-nature-k0bwp6k3mfdn3bfd.webp',
-        'https://wallpapercave.com/wp/wp2868363.jpg',
-        'https://wallpapercave.com/wp/wp3174096.jpg',
-        'https://wallpapercave.com/wp/wp3174097.jpg'
-    ];
-
-    const sampleWorldInfo = {
-        worldName: 'Minecraft World',
-        worldUploader: 'Sashwat Anagolum',
-        worldAccesibility: 'Public',
-        worldURL: '/',
-        worldImages: worldImages,
-        worldShortDesc: 'A sample world made in Minecraft ' +
-            'that somehows works on the Unity WebGL player. ' +
-            'Explore the infinite world, build fortresses, defend ' +
-            'yourself from monsters, and much more!',
-        worldTags: ['Minecraft', 'Sandbox', 'Another tag', 'Tag 4']
-    };
+    const boxSizeClasses = 'relative w-full h-' + loadingHeights[props.imageID % 5] +
+        ' rounded-lg bg-lightgrey box-border z-0';
+    const imgSizeClasses = 'flex flex-col w-full h-' + (loadingHeights[props.imageID % 5]) +
+        ' justify-around gap-y-3';
 
     let imageDivClasses: string, darkModalClasses: string, darkModalTextClasses: string;
 
@@ -61,11 +98,7 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
         darkModalClasses += ' hidden';
     }
 
-    const boxSizeClasses = 'relative w-full h-' + loadingHeights[props.imageID % 5] +
-        ' rounded-lg bg-lightgrey box-border z-0';
-    const imgSizeClasses = 'flex flex-col w-full h-' + (loadingHeights[props.imageID % 5]) + ' justify-around gap-y-3';
-
-    if (props.showLoading) {
+    if (props.showLoading || !imageURLs.length) {
         return (
             <div className={boxSizeClasses}>
                 <div className={imgSizeClasses}>
@@ -102,7 +135,7 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                 <div className="relative w-full">
                     <div className={imageDivClasses}>
                         <Image
-                            src={worldImages[props.imageID % 7]}
+                            src={imageURLs[0]}
                             alt="minecraft world"
                             priority
                             className="relative min-w-full rounded-t-lg overflow-clip -z-10"
@@ -118,10 +151,10 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                 </div>
                 <div className="p-2">
                     <p className="text-md font-semibold">{props.worldName}</p>
-                    <p>{sampleWorldInfo.worldUploader}</p>
+                    <p>{props.worldCreator}</p>
                     <div className="flex flex-row flex-wrap py-2 text-xs gap-1">
                         {
-                            sampleWorldInfo.worldTags.map(
+                            props.worldTags.map(
                                 (tag, index) => (
                                     <p
                                         className="px-3 py-1 bg-darkgrey text-white rounded-2xl"
@@ -134,7 +167,11 @@ export default function WorldPreviewCard(props: WorldPreviewCardProps) {
                 </div>
                 <WorldDetailsModal
                     isOpen={modalOpen}
-                    worldInfo={sampleWorldInfo}
+                    worldDesc={props.worldDesc}
+                    worldTags={props.worldTags}
+                    worldName={props.worldName}
+                    worldCreator={props.worldCreator}
+                    imageURLs={imageURLs}
                     stateChanger={
                         () => {
                             setModalOpen(false);

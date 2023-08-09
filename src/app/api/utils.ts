@@ -7,16 +7,21 @@ export default async function fetchWithTimeout(requestURL: string, options = {},
         timeout
     );
 
-    try {
-        response = await fetch(
-            requestURL,
-            {
-                ...options,
-                signal: controller.signal
-            }
-        );
-    } catch (error) {
+    if (!requestURL) {
+        console.log(options);
         response = new Response(null, { status: 408 });
+    } else {
+        try {
+            response = await fetch(
+                requestURL,
+                {
+                    ...options,
+                    signal: controller.signal
+                }
+            );
+        } catch (error) {
+            response = new Response(null, { status: 408 });
+        }
     }
 
     return response;

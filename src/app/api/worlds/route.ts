@@ -27,7 +27,7 @@ export async function GET(request: Request) {
             let newObj = {
                 'worldName': nextWorld.title,
                 'worldCreatorID': objID.toString(),
-                'worldURLSlug': nextWorld.urlSlug,
+                'worldURLSlug': 'worlds/' + nextWorld.urlSlug,
                 'worldTags': nextWorld.tags,
                 'worldDesc': nextWorld.description,
             }

@@ -12,7 +12,7 @@ type WorldListProps = {
 type WorldInfo = {
     worldName: string;
     worldCreatorID: string;
-    worldURLSlug: string[];
+    worldURLSlug: string;
     worldTags: string[];
     worldDesc: string;
     worldCreatorName: string;
@@ -50,6 +50,14 @@ async function fetchWorldData(pageNumber: number, username: string): Promise<Wor
                         }
                     }
                 );
+
+                if (dbResponse.status == 200 && dbResponse.body) {
+                    const creatorName = new TextDecoder().decode(
+                        (await dbResponse.body.getReader().read()).value
+                    );
+
+                    worldsData[i].worldCreatorName = creatorName;
+                }
             }
         }
     }
@@ -91,6 +99,8 @@ export default function WorldList(props: WorldListProps) {
                             showLoading={true}
                             worldCreator=""
                             worldURLSlug=""
+                            worldTags={[]}
+                            worldDesc=""
                         ></WorldPreviewCard>
                     </div>
                 )
@@ -104,9 +114,11 @@ export default function WorldList(props: WorldListProps) {
                         <WorldPreviewCard
                             worldName={worldData.worldName}
                             worldCreator={worldData.worldCreatorName}
-                            worldURLSlug=""
+                            worldURLSlug={worldData.worldURLSlug}
                             imageID={index}
+                            worldTags={worldData.worldTags}
                             showLoading={false}
+                            worldDesc={worldData.worldDesc}
                         ></WorldPreviewCard>
                     </div>
                 )
