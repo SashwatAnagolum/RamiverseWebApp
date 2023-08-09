@@ -2,54 +2,64 @@
 
 import fetchWithTimeout from '@/app/api/utils';
 import WorldPreviewCard from '@/components/WorldPreviewCard/WorldPreviewCard';
+
 import { useEffect, useState } from 'react';
 
 type WorldListProps = {
     user: string;
 }
 
-async function fetchWorldNames(pageNumber: number): Promise<string[]> {
-    let worldNames: string[] = new Array();
+type WorldInfo = {
+    worldName: string;
+    worldCreatorID: string;
+    worldURLSlug: string[];
+    worldTags: string[];
+    worldDesc: string;
+    worldCreatorName: string;
+}
 
-    const data = await fetchWithTimeout(
-        './api/presigned',
+async function fetchWorldData(pageNumber: number, username: string): Promise<WorldInfo[]> {
+    let worldsData: WorldInfo[] = new Array();
+
+    const response = await fetchWithTimeout(
+        './api/worlds',
         {
             headers: {
-                'request-type': 'getAll',
-                'maxKeys': 25,
-                'delimiter': '/',
-                'prefix': 'worlds/'
+                'username': username,
+                'page': pageNumber,
+                'pageSize': '10'
             }
         }
     );
 
-    const signedURL = await data.body?.getReader().read().then(
-        (resp) => new TextDecoder().decode(resp.value)
-    );
+    if (response.status == 200) {
+        if (response.body) {
+            const responseText = new TextDecoder().decode(
+                (await response.body.getReader().read()).value
+            );
 
-    if (signedURL) {
-        const response = await fetchWithTimeout(signedURL);
+            const worldsJSON = JSON.parse(responseText);
+            worldsData = worldsJSON.worlds;
 
-        const folderNames = await response.body?.getReader().read().then(
-            (resp) => new TextDecoder().decode(resp.value)
-        );
-
-        if (folderNames) {
-            const xml = new DOMParser().parseFromString(folderNames, 'text/xml');
-            const prefixArray = xml.documentElement.getElementsByTagName('CommonPrefixes');
-
-            for (let i = 0; i < prefixArray.length; i++) {
-                worldNames.push(prefixArray[i].getElementsByTagName('Prefix')[0].textContent + '');
+            for (let i = 0; i < worldsData.length; i++) {
+                const dbResponse = await fetchWithTimeout(
+                    './api/users',
+                    {
+                        headers: {
+                            'id': worldsData[i].worldCreatorID
+                        }
+                    }
+                );
             }
         }
     }
 
-    return worldNames;
+    return worldsData;
 }
 
 export default function WorldList(props: WorldListProps) {
     const [isLoading, setIsLoading] = useState(true);
-    const [worldNames, setWorldNames] = useState(new Array());
+    const [worldsData, setWorldsData] = useState(new Array());
     const [pageNumber, setPageNumber] = useState(0);
     let worldCards;
 
@@ -61,22 +71,16 @@ export default function WorldList(props: WorldListProps) {
 
     useEffect(
         () => {
-            fetchWorldNames(pageNumber).then(
+            fetchWorldData(pageNumber, '').then(
                 (result) => {
-                    setWorldNames(result);
+                    setWorldsData(result);
                     setIsLoading(false);
                 }
             );
         }, [pageNumber]
     );
 
-    const worldIDs: string[] = new Array(12);
-
-    for (let i = 0; i < 14; i++) {
-        worldIDs[i] = "ff";
-    }
-
-    if (isLoading || (worldNames.length == 0)) {
+    if (isLoading || (worldsData.length == 0)) {
         worldCards = indices.map(
             function (index: number) {
                 return (
@@ -85,18 +89,22 @@ export default function WorldList(props: WorldListProps) {
                             worldName=""
                             imageID={index}
                             showLoading={true}
+                            worldCreator=""
+                            worldURLSlug=""
                         ></WorldPreviewCard>
                     </div>
                 )
             }
         )
     } else {
-        worldCards = worldNames.map(
-            function (worldName: string, index: number) {
+        worldCards = worldsData.map(
+            function (worldData: WorldInfo, index: number) {
                 return (
                     <div className="w-full mb-5 break-inside-avoid" key={index}>
                         <WorldPreviewCard
-                            worldName={worldName}
+                            worldName={worldData.worldName}
+                            worldCreator={worldData.worldCreatorName}
+                            worldURLSlug=""
                             imageID={index}
                             showLoading={false}
                         ></WorldPreviewCard>

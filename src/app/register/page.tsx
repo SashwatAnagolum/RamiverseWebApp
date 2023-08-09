@@ -63,7 +63,7 @@ function checkPasswordValidity(passwordString: string): boolean {
     );
 }
 
-export default function Login() {
+export default function Register() {
     const [usernameString, setUsernameString] = useState('');
     const [passwordString, setPasswordString] = useState('');
     const [registerValid, setRegisterValid] = useState(0);

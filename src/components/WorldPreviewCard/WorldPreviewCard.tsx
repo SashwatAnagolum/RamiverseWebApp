@@ -11,17 +11,9 @@ type WorldPreviewCardProps = {
     imageID: number;
     worldName: string;
     showLoading: boolean;
+    worldCreator: string;
+    worldURLSlug: string;
 };
-
-export interface WorldInfoInterface {
-    worldName: string;
-    worldUploader: string;
-    worldAccesibility: string;
-    worldURL: string;
-    worldImages: string[];
-    worldShortDesc: string;
-    worldTags: string[];
-}
 
 export default function WorldPreviewCard(props: WorldPreviewCardProps) {
     const [isHoveredOn, setIsHoveredOn] = useState(false);
