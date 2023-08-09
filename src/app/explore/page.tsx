@@ -10,7 +10,7 @@ export default function Explore() {
   );
 
   return (
-    <div className="">
+    <div className="flex flex-col items-center">
       <canvas
         id="unity-canvas"
         className="w-full"
