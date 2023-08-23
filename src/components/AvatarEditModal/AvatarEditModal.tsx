@@ -5,6 +5,7 @@ import Button from "../Button/Button";
 import CloseButton from "../CloseButton/CloseButton";
 
 import { RefObject, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 type AvatarEditModalProps = {
     isOpen: boolean;
@@ -177,18 +178,16 @@ export default function AvatarEditModal(props: AvatarEditModalProps) {
                 </div>
                 <div className="flex flex-col m-5 items-center">
                     <div className="w-64 h-64">
-                        <img
+                        <Image
                             ref={imageRef}
                             className={imageClassName}
                             fetchPriority="high"
                             alt=""
-                            onLoad={
-                                () => handleImageLoad(
-                                    imageRef, setValidUpload, getURL,
-                                    fileInputRef, props.userID
-                                )
-                            }
-                        ></img>
+                            onLoad={() => handleImageLoad(
+                                imageRef, setValidUpload, getURL,
+                                fileInputRef, props.userID
+                            )} src={""}
+                        ></Image>
                     </div>
                 </div>
             </div>

@@ -11,13 +11,15 @@ if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
     canvas.style.height = "100%";
     canvas.style.position = "fixed";
 
+    console.log("reachable");
+
     document.body.style.textAlign = "left";
 }
 
 createUnityInstance(document.querySelector("#unity-canvas"), {
-    dataUrl: "Build/Build.data",
-    frameworkUrl: "Build/Build.framework.js",
-    codeUrl: "Build/Build.wasm",
+    dataUrl: "/Build/Build.data",
+    frameworkUrl: "/Build/Build.framework.js",
+    codeUrl: "/Build/Build.wasm",
     streamingAssetsUrl: "StreamingAssets",
     companyName: "DefaultCompany",
     productName: "AddressablesTesting",
