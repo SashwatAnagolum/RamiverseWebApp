@@ -15,12 +15,29 @@ function Explore() {
   });
 
   // // We'll use a state to store the device pixel ratio.
-  var [devicePixelRatio, setDevicePixelRatio] = useState(
-    window.devicePixelRatio
-  );
+  // var [devicePixelRatio, setDevicePixelRatio] = useState(
+  //   window.devicePixelRatio
+  // );
+
+  var devicePixelRatio = 1;
+  function setDevicePixelRatio(num: number) {
+    devicePixelRatio = num;
+  }
+
+  var WIDTH = 1280;
+  var HEIGHT = 720;
 
   useEffect(
+
+
     function () {
+      const outer = document.getElementById('_outer');
+
+      if (outer) {
+        WIDTH = outer.clientWidth;
+        HEIGHT = outer.clientHeight;
+      }
+
       document.body.style.overflow = "hidden"
       // A function which will update the device pixel ratio of the Unity
       // Application to match the device pixel ratio of the browser.
@@ -44,15 +61,6 @@ function Explore() {
 
 
   );
-
-  const x = document.getElementById('_outer');
-  var WIDTH = 1280;
-  var HEIGHT = 720;
-
-  if (x) {
-    WIDTH = x.clientWidth;
-    HEIGHT = x.clientHeight;
-  }
 
   return (
 
