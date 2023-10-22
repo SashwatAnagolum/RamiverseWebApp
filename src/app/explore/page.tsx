@@ -1,25 +1,80 @@
 'use client'
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Unity, useUnityContext } from "react-unity-webgl";
 
-export default function Explore() {
+const buildFiles = 'https://cdn.ramiverse.xyz/Public/Build'
+
+
+function Explore() {
+  const { unityProvider, isLoaded, loadingProgression } = useUnityContext({
+    loaderUrl: `${buildFiles}/Build.loader.js`,
+    dataUrl: `${buildFiles}/Build.data`,
+    frameworkUrl: `${buildFiles}/Build.framework.js`,
+    codeUrl: `${buildFiles}/Build.wasm`,
+  });
+
+  // // We'll use a state to store the device pixel ratio.
+  // var [devicePixelRatio, setDevicePixelRatio] = useState(
+  //   window.devicePixelRatio
+  // );
+
+  var devicePixelRatio = 1;
+  function setDevicePixelRatio(num: number) {
+    devicePixelRatio = num;
+  }
+
+  var WIDTH = 1280;
+  var HEIGHT = 720;
+
   useEffect(
-    () => {
-      document.body.setAttribute('style', 'text-align: center; padding: 0; border: 0; margin: 0;');
-    }
+
+
+    function () {
+      const outer = document.getElementById('_outer');
+
+      if (outer) {
+        WIDTH = outer.clientWidth;
+        HEIGHT = outer.clientHeight;
+      }
+
+      document.body.style.overflow = "hidden"
+      // A function which will update the device pixel ratio of the Unity
+      // Application to match the device pixel ratio of the browser.
+      const updateDevicePixelRatio = function () {
+        setDevicePixelRatio(window.devicePixelRatio);
+      };
+      // A media matcher which watches for changes in the device pixel ratio.
+      const mediaMatcher = window.matchMedia(
+        `screen and (resolution: ${devicePixelRatio}dppx)`
+      );
+      // Adding an event listener to the media matcher which will update the
+      // device pixel ratio of the Unity Application when the device pixel
+      // ratio changes.
+      mediaMatcher.addEventListener("change", updateDevicePixelRatio);
+      return function () {
+        // Removing the event listener when the component unmounts.
+        mediaMatcher.removeEventListener("change", updateDevicePixelRatio);
+      };
+    },
+    [devicePixelRatio]
+
+
   );
 
   return (
-    <div className="flex flex-col items-center">
-      <canvas
-        id="unity-canvas"
-        className="w-full"
-        height={720}
-        width={1280}
-        style={{ width: 1280, height: 720 }}
-      ></canvas>
-      <script type="text/javascript" src="/Build/Build.loader.js" defer></script>
-      <script type="text/javascript" src="/scripts/script.js" defer></script>
+
+
+    <div id="explorer" className="flex flex-col items-center">
+      <div>
+        <Unity
+          unityProvider={unityProvider}
+          style={{ width: WIDTH, height: HEIGHT }}
+          devicePixelRatio={devicePixelRatio}
+        />
+      </div>
     </div>
   );
 }
+
+export default Explore;
